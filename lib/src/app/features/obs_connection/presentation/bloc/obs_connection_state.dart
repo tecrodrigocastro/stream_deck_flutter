@@ -9,6 +9,16 @@ abstract class ObsConnectionState extends Equatable {
 
 class ObsConnectionInitial extends ObsConnectionState {}
 
+/// Há uma conexão guardada; os campos da tela devem ser preenchidos com ela.
+class ObsSavedConnectionLoaded extends ObsConnectionState {
+  final SavedObsConnectionEntity saved;
+
+  const ObsSavedConnectionLoaded(this.saved);
+
+  @override
+  List<Object> get props => [saved];
+}
+
 class ObsConnectionLoading extends ObsConnectionState {}
 
 class ObsConnectionSuccess extends ObsConnectionState {

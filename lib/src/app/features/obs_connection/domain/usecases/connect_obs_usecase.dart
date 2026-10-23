@@ -10,5 +10,15 @@ class ConnectObsUsecase implements UseCase<ObsConnectionEntity, ObsConnectionPar
   ConnectObsUsecase({required IObsConnectionRepository repository}) : _repository = repository;
 
   @override
-  AsyncResult<ObsConnectionEntity> call(ObsConnectionParams params) => _repository.connect(params);
+  AsyncResult<ObsConnectionEntity> call(ObsConnectionParams params) async {
+    final result = await _repository.connect(params);
+
+    // Conectou: guarda para reconectar sozinho na próxima abertura do app.
+    // Se não conseguir guardar, a conexão que já está aberta segue valendo.
+    if (result.isSuccess()) {
+      await _repository.saveConnection(params);
+    }
+
+    return result;
+  }
 }

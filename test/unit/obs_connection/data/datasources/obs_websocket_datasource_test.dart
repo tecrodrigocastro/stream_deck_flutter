@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/data/datasources/obs_socket.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/data/datasources/obs_websocket_datasource.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/data/models/obs_connection_model.dart';
+import 'package:base_clean_arch_bloc/src/core/obs/obs_requester.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class FakeObsSocket implements IObsSocket {
@@ -182,5 +183,115 @@ void main() {
 
     expect(notified, 0);
     expect(socket.closed, isTrue);
+  });
+
+  group('pedidos e eventos', () {
+    test('assina os eventos de cenas no Identify', () async {
+      await handshake();
+
+      expect(socket.sent.first['d']['eventSubscriptions'], 1 << 2);
+    });
+
+    test('request manda op 6 e devolve o responseData da resposta', () async {
+      await handshake();
+
+      final future = datasource.request('GetSceneList', data: {'x': 1});
+      await pumpEventQueue();
+      final sent = socket.sent.last;
+      expect(sent['op'], 6);
+      expect(sent['d']['requestType'], 'GetSceneList');
+      expect(sent['d']['requestData'], {'x': 1});
+
+      socket.receive({
+        'op': 7,
+        'd': {
+          'requestType': 'GetSceneList',
+          'requestId': sent['d']['requestId'],
+          'requestStatus': {'result': true, 'code': 100},
+          'responseData': {'ok': true},
+        },
+      });
+
+      expect(await future, {'ok': true});
+    });
+
+    test('request sem responseData devolve mapa vazio', () async {
+      await handshake();
+
+      final future = datasource.request('SetCurrentProgramScene');
+      await pumpEventQueue();
+      socket.receive({
+        'op': 7,
+        'd': {
+          'requestId': socket.sent.last['d']['requestId'],
+          'requestStatus': {'result': true, 'code': 100},
+        },
+      });
+
+      expect(await future, isEmpty);
+    });
+
+    test('resposta de erro vira ObsRequestException com a mensagem do OBS', () async {
+      await handshake();
+
+      final future = datasource.request('SetCurrentProgramScene');
+      final expectation = expectLater(
+        future,
+        throwsA(isA<ObsRequestException>().having((e) => e.message, 'message', 'No scene was found')),
+      );
+      await pumpEventQueue();
+      socket.receive({
+        'op': 7,
+        'd': {
+          'requestId': socket.sent.last['d']['requestId'],
+          'requestStatus': {'result': false, 'code': 600, 'comment': 'No scene was found'},
+        },
+      });
+
+      await expectation;
+    });
+
+    test('request sem conexão falha na hora', () async {
+      await expectLater(datasource.request('GetSceneList'), throwsA(isA<ObsRequestException>()));
+    });
+
+    test('request sem resposta estoura o tempo', () async {
+      datasource = ObsWebSocketDatasource(
+        requestTimeout: const Duration(milliseconds: 50),
+        connector: (uri) async => socket,
+      );
+      await handshake();
+
+      await expectLater(datasource.request('GetSceneList'), throwsA(isA<ObsRequestException>()));
+    });
+
+    test('pedido pendente falha quando a conexão cai', () async {
+      await handshake();
+
+      final future = datasource.request('GetSceneList');
+      final expectation = expectLater(future, throwsA(isA<ObsRequestException>()));
+      await pumpEventQueue();
+      await socket.closeFromServer(1006);
+
+      await expectation;
+    });
+
+    test('repassa os eventos do OBS', () async {
+      await handshake();
+
+      final future = datasource.events.first;
+      socket.receive({
+        'op': 5,
+        'd': {
+          'eventType': 'CurrentProgramSceneChanged',
+          'eventIntent': 4,
+          'eventData': {'sceneName': 'Codando'},
+        },
+      });
+
+      final event = await future;
+      expect(event.type, 'CurrentProgramSceneChanged');
+      expect(event.data['sceneName'], 'Codando');
+    });
   });
 }

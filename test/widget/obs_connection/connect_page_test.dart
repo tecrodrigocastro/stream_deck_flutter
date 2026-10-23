@@ -1,5 +1,6 @@
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/dtos/obs_connection_params.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/entities/obs_connection_entity.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/entities/saved_obs_connection_entity.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/bloc/obs_connection_bloc.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/pages/connect_page.dart';
 import 'package:base_clean_arch_bloc/src/core/design_system/design_system.dart';
@@ -13,13 +14,13 @@ import 'package:mocktail/mocktail.dart';
 
 class MockObsConnectionBloc extends MockBloc<ObsConnectionEvent, ObsConnectionState> implements ObsConnectionBloc {}
 
-class FakeObsConnectRequested extends Fake implements ObsConnectRequested {}
+class FakeObsConnectionEvent extends Fake implements ObsConnectionEvent {}
 
 void main() {
   late MockObsConnectionBloc bloc;
 
   setUpAll(() {
-    registerFallbackValue(FakeObsConnectRequested());
+    registerFallbackValue(FakeObsConnectionEvent());
   });
 
   setUp(() {
@@ -37,7 +38,7 @@ void main() {
     final router = GoRouter(
       routes: [
         GoRoute(path: '/', builder: (context, state) => const ConnectPage()),
-        GoRoute(path: '/home', builder: (context, state) => const Scaffold(body: Text('HOME'))),
+        GoRoute(path: '/cenas', builder: (context, state) => const Scaffold(body: Text('CENAS'))),
       ],
     );
 
@@ -46,6 +47,32 @@ void main() {
       child: MaterialApp.router(theme: RedTheme.dark, routerConfig: router),
     );
   }
+
+  testWidgets('avisa o bloc ao abrir para carregar a conexão guardada', (tester) async {
+    useTallScreen(tester);
+    await tester.pumpWidget(app());
+
+    verify(() => bloc.add(const ObsStarted())).called(1);
+  });
+
+  testWidgets('preenche os campos com a conexão guardada', (tester) async {
+    useTallScreen(tester);
+    whenListen(
+      bloc,
+      Stream<ObsConnectionState>.fromIterable([
+        const ObsSavedConnectionLoaded(
+          SavedObsConnectionEntity(host: '192.168.0.12', port: 4000, password: 'senha', autoConnect: false),
+        ),
+      ]),
+      initialState: ObsConnectionInitial(),
+    );
+
+    await tester.pumpWidget(app());
+    await tester.pump();
+
+    expect(find.text('192.168.0.12'), findsOneWidget);
+    expect(find.text('4000'), findsOneWidget);
+  });
 
   testWidgets('mostra título, porta padrão e status desconectado', (tester) async {
     useTallScreen(tester);
@@ -64,7 +91,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Informe o endereço do PC'), findsOneWidget);
-    verifyNever(() => bloc.add(any()));
+    verifyNever(() => bloc.add(any(that: isA<ObsConnectRequested>())));
   });
 
   testWidgets('dados válidos disparam ObsConnectRequested com os valores digitados', (tester) async {
@@ -77,7 +104,7 @@ void main() {
     await tester.tap(find.text('Conectar'));
     await tester.pump();
 
-    final event = verify(() => bloc.add(captureAny())).captured.single as ObsConnectRequested;
+    final event = verify(() => bloc.add(captureAny(that: isA<ObsConnectRequested>()))).captured.single as ObsConnectRequested;
     expect(event.params, ObsConnectionParams(host: '192.168.0.12', port: 4455, password: 'senha-da-live'));
   });
 
@@ -106,7 +133,7 @@ void main() {
     expect(find.text('Senha incorreta'), findsOneWidget);
   });
 
-  testWidgets('vai para a Home quando conecta', (tester) async {
+  testWidgets('vai para as cenas quando conecta', (tester) async {
     useTallScreen(tester);
     whenListen(
       bloc,
@@ -121,6 +148,6 @@ void main() {
     await tester.pumpWidget(app());
     await tester.pumpAndSettle();
 
-    expect(find.text('HOME'), findsOneWidget);
+    expect(find.text('CENAS'), findsOneWidget);
   });
 }

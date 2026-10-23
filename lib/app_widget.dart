@@ -1,6 +1,7 @@
 import 'package:base_clean_arch_bloc/routes.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/bloc/obs_connection_bloc.dart';
+import 'package:base_clean_arch_bloc/src/app/features/scenes/presentation/bloc/scenes_bloc.dart';
 import 'package:base_clean_arch_bloc/src/core/DI/dependency_injector.dart';
 import 'package:base_clean_arch_bloc/src/core/design_system/design_system.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,9 @@ class AppWidget extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => injector<ObsConnectionBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => injector<ScenesBloc>(),
         ),
       ],
       // Se o OBS cair com o app aberto, volta para a tela de conexão.
