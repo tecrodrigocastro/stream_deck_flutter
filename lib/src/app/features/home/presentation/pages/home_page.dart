@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
             onPressed: () async {
               final sessionService = injector<SessionService>();
               await sessionService.removeToken();
-              router.go('/login');
+              router.go('/conectar');
             },
             icon: const Icon(Icons.logout_sharp),
           ),
