@@ -95,6 +95,10 @@ Full conventions (naming table, SOLID mapping, dependency rule) live in `.claude
 - **Dependency injection**: all bindings are centralized in `lib/src/core/DI/dependency_injector.dart` (get_it), which makes swapping implementations (e.g. mock vs real repository) and unit testing straightforward.
 - **Structured error handling**: an exception hierarchy under `lib/src/core/errors/` maps HTTP failures to domain-meaningful errors.
 
+## Design system
+
+Tokens, tema e componentes em `lib/src/core/design_system/` (veja o README da pasta). Catálogo visual na rota `/design-system` (debug).
+
 ## Tests
 
 The `auth` feature has full-layer test coverage as the reference to follow: unit tests for entities, DTOs, usecases, repositories and datasources; a BLoC test suite covering states/events/transitions; and a widget test for the login page.

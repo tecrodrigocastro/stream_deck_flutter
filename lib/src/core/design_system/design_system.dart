@@ -1,0 +1,24 @@
+// Design system RED: ponto único de importação.
+export 'shapes/red_shapes.dart';
+export 'shapes/red_tag_border.dart';
+export 'theme/red_theme.dart';
+export 'tokens/red_colors.dart';
+export 'tokens/red_icon.dart';
+export 'tokens/red_icons.dart';
+export 'tokens/red_spacing.dart';
+export 'tokens/red_typography.dart';
+export 'widgets/red_audio_fader_widget.dart';
+export 'widgets/red_icon_button_widget.dart';
+export 'widgets/red_icon_widget.dart';
+export 'widgets/red_live_badge_widget.dart';
+export 'widgets/red_nav_bar_widget.dart';
+export 'widgets/red_outline_button_widget.dart';
+export 'widgets/red_panel_widget.dart';
+export 'widgets/red_primary_button_widget.dart';
+export 'widgets/red_progress_bar_widget.dart';
+export 'widgets/red_scene_key_widget.dart';
+export 'widgets/red_segmented_widget.dart';
+export 'widgets/red_status_dot_widget.dart';
+export 'widgets/red_switch_widget.dart';
+export 'widgets/red_tag_widget.dart';
+export 'widgets/red_text_field_widget.dart';
