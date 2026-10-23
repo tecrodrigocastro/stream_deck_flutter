@@ -99,6 +99,14 @@ Full conventions (naming table, SOLID mapping, dependency rule) live in `.claude
 
 Tokens, tema e componentes em `lib/src/core/design_system/` (veja o README da pasta). Catálogo visual na rota `/design-system` (debug).
 
+## Conexão com o OBS
+
+`lib/src/app/features/obs_connection/` fala o protocolo obs-websocket v5 (Hello, Identify, Identified, com senha por SHA-256) via `web_socket_channel`. Esta etapa só abre e mantém a conexão; pedidos e eventos (trocar cena, áudio) vêm depois.
+
+- Android: `usesCleartextTraffic` e `INTERNET` no manifest, porque o OBS usa `ws://` na rede local.
+- iOS: `NSAllowsLocalNetworking` e o texto de uso da rede local no `Info.plist`.
+- Use só em rede local. Nunca exponha a porta 4455 na internet.
+
 ## Tests
 
 The `auth` feature has full-layer test coverage as the reference to follow: unit tests for entities, DTOs, usecases, repositories and datasources; a BLoC test suite covering states/events/transitions; and a widget test for the login page.
