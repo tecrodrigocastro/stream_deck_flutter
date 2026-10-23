@@ -101,7 +101,7 @@ Tokens, tema e componentes em `lib/src/core/design_system/` (veja o README da pa
 
 ## Conexão com o OBS
 
-`lib/src/app/features/obs_connection/` fala o protocolo obs-websocket v5 (Hello, Identify, Identified, com senha por SHA-256) via `web_socket_channel`. Esta etapa só abre e mantém a conexão; pedidos e eventos (trocar cena, áudio) vêm depois.
+`lib/src/app/features/obs_connection/` fala o protocolo obs-websocket v5 (Hello, Identify, Identified, com senha por SHA-256) via `web_socket_channel`. Guarda a última conexão (endereço, porta e senha, em texto simples no armazenamento do app) e conecta sozinho ao abrir o app; "Desconectar" nos Ajustes desliga isso. Pedidos e eventos passam por `IObsRequester` (`core/obs/`), que as features consomem sem conhecer o WebSocket. A feature `scenes` lista as cenas, troca a cena no ar e acompanha mudanças por evento.
 
 - Android: `usesCleartextTraffic` e `INTERNET` no manifest, porque o OBS usa `ws://` na rede local.
 - iOS: `NSAllowsLocalNetworking` e o texto de uso da rede local no `Info.plist`.

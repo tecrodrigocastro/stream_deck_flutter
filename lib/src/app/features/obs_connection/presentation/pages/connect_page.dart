@@ -7,7 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// Primeira tela do app: endereço, porta e senha do servidor WebSocket do OBS.
-/// Conectou, vai para a Home.
+/// Preenche os campos com a última conexão e, ao abrir o app, conecta sozinho
+/// quando ela estava ligada. Conectou, vai para as cenas.
 class ConnectPage extends StatefulWidget {
   const ConnectPage({super.key});
 
@@ -23,6 +24,12 @@ class _ConnectPageState extends State<ConnectPage> {
 
   String? _hostError;
   String? _portError;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ObsConnectionBloc>().add(const ObsStarted());
+  }
 
   @override
   void dispose() {
@@ -54,8 +61,13 @@ class _ConnectPageState extends State<ConnectPage> {
   }
 
   void _onStateChanged(BuildContext context, ObsConnectionState state) {
+    if (state is ObsSavedConnectionLoaded) {
+      _host.text = state.saved.host;
+      _port.text = '${state.saved.port}';
+      _password.text = state.saved.password;
+    }
     if (state is ObsConnectionSuccess) {
-      context.go('/home');
+      context.go('/cenas');
     }
     if (state is ObsConnectionFailure) {
       ScaffoldMessenger.of(context)

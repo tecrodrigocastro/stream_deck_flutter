@@ -7,6 +7,13 @@ abstract class ObsConnectionEvent extends Equatable {
   List<Object> get props => [];
 }
 
+/// Disparado ao abrir a tela de conexão: carrega a conexão guardada (para
+/// preencher os campos) e, na primeira vez que o app abre, conecta sozinho
+/// quando a conexão automática está ligada.
+class ObsStarted extends ObsConnectionEvent {
+  const ObsStarted();
+}
+
 class ObsConnectRequested extends ObsConnectionEvent {
   final ObsConnectionParams params;
 
