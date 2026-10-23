@@ -1,8 +1,8 @@
 import 'package:base_clean_arch_bloc/routes.dart';
-import 'package:base_clean_arch_bloc/src/core/DI/dependency_injector.dart';
-import 'package:base_clean_arch_bloc/src/core/services/session_service.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/bloc/obs_connection_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -21,9 +21,9 @@ class HomePage extends StatelessWidget {
               icon: const Icon(Icons.palette_outlined),
             ),
           IconButton(
-            onPressed: () async {
-              final sessionService = injector<SessionService>();
-              await sessionService.removeToken();
+            tooltip: 'Desconectar do OBS',
+            onPressed: () {
+              context.read<ObsConnectionBloc>().add(const ObsDisconnectRequested());
               router.go('/conectar');
             },
             icon: const Icon(Icons.logout_sharp),

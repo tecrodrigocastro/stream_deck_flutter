@@ -5,6 +5,13 @@ import 'package:base_clean_arch_bloc/src/app/features/auth/domain/repositories/a
 import 'package:base_clean_arch_bloc/src/app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/infrastructure/auth_interceptor.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/data/datasources/obs_websocket_datasource.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/data/repositories/obs_connection_repository_impl.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/repositories/obs_connection_repository_interface.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/usecases/connect_obs_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/usecases/disconnect_obs_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/domain/usecases/observe_obs_connection_closed_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/bloc/obs_connection_bloc.dart';
 import 'package:base_clean_arch_bloc/src/core/cache/shared_preferences/shared_preferences_impl.dart';
 import 'package:base_clean_arch_bloc/src/core/client_http/dio/rest_client_dio_impl.dart';
 import 'package:base_clean_arch_bloc/src/core/client_http/logger/client_interceptor_logger_impl.dart';
@@ -56,5 +63,17 @@ void setupDependencyInjector({bool loggerApi = false, bool useMocks = true, Logg
           authRepository: injector<IAuthRepository>(),
           sessionService: injector<SessionService>(),
         ),
+      ));
+
+  injector.registerLazySingleton<ObsWebSocketDatasource>(() => ObsWebSocketDatasource());
+
+  injector.registerLazySingleton<IObsConnectionRepository>(
+    () => ObsConnectionRepositoryImpl(datasource: injector<ObsWebSocketDatasource>()),
+  );
+
+  injector.registerLazySingleton(() => ObsConnectionBloc(
+        connectUsecase: ConnectObsUsecase(repository: injector<IObsConnectionRepository>()),
+        disconnectUsecase: DisconnectObsUsecase(repository: injector<IObsConnectionRepository>()),
+        observeClosedUsecase: ObserveObsConnectionClosedUsecase(repository: injector<IObsConnectionRepository>()),
       ));
 }
