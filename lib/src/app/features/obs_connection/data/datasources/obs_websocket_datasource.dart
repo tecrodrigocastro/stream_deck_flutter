@@ -37,8 +37,9 @@ class ObsWebSocketDatasource implements IObsRequester {
   static const int _authFailedCloseCode = 4009;
 
   /// Categorias de evento assinadas no Identify (bitmask do obs-websocket):
-  /// Scenes = 1 << 2. Ao incluir áudio, gravação etc., somar aqui.
-  static const int _eventSubscriptions = 1 << 2;
+  /// Scenes (1 << 2), Inputs (1 << 3) e InputVolumeMeters (1 << 16, os
+  /// medidores de áudio). Ao incluir gravação etc., somar aqui.
+  static const int _eventSubscriptions = (1 << 2) | (1 << 3) | (1 << 16);
 
   final ObsSocketConnector _connector;
   final Duration timeout;

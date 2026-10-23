@@ -1,3 +1,4 @@
+import 'package:base_clean_arch_bloc/src/app/features/audio/presentation/pages/audio_page.dart';
 import 'package:base_clean_arch_bloc/src/app/features/base/presentation/pages/base_page.dart';
 import 'package:base_clean_arch_bloc/src/app/features/base/presentation/widgets/coming_soon_widget.dart';
 import 'package:base_clean_arch_bloc/src/app/features/design_system/presentation/pages/design_system_page.dart';
@@ -20,7 +21,7 @@ final router = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/audio', builder: (context, state) => const ComingSoonWidget(title: 'Áudio')),
+            GoRoute(path: '/audio', builder: (context, state) => const AudioPage()),
           ],
         ),
         StatefulShellBranch(

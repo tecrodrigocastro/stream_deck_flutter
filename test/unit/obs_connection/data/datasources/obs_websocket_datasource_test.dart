@@ -186,10 +186,10 @@ void main() {
   });
 
   group('pedidos e eventos', () {
-    test('assina os eventos de cenas no Identify', () async {
+    test('assina os eventos de cenas, de fontes e os medidores de áudio no Identify', () async {
       await handshake();
 
-      expect(socket.sent.first['d']['eventSubscriptions'], 1 << 2);
+      expect(socket.sent.first['d']['eventSubscriptions'], (1 << 2) | (1 << 3) | (1 << 16));
     });
 
     test('request manda op 6 e devolve o responseData da resposta', () async {

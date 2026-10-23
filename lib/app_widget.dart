@@ -1,4 +1,5 @@
 import 'package:base_clean_arch_bloc/routes.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/presentation/bloc/audio_bloc.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/bloc/obs_connection_bloc.dart';
 import 'package:base_clean_arch_bloc/src/app/features/scenes/presentation/bloc/scenes_bloc.dart';
@@ -22,6 +23,9 @@ class AppWidget extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => injector<ScenesBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => injector<AudioBloc>(),
         ),
       ],
       // Se o OBS cair com o app aberto, volta para a tela de conexão.
