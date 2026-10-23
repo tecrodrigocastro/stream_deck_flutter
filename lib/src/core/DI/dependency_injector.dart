@@ -1,3 +1,11 @@
+import 'package:base_clean_arch_bloc/src/app/features/audio/data/datasources/obs_audio_datasource.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/data/repositories/audio_repository_impl.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/domain/repositories/audio_repository_interface.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/domain/usecases/get_audio_inputs_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/domain/usecases/observe_audio_updates_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/domain/usecases/set_input_mute_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/domain/usecases/set_input_volume_usecase.dart';
+import 'package:base_clean_arch_bloc/src/app/features/audio/presentation/bloc/audio_bloc.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:base_clean_arch_bloc/src/app/features/auth/data/repositories/auth_repository_mock.dart';
@@ -101,5 +109,16 @@ void setupDependencyInjector({bool loggerApi = false, bool useMocks = true, Logg
         getScenesUsecase: GetScenesUsecase(repository: injector<IScenesRepository>()),
         switchSceneUsecase: SwitchSceneUsecase(repository: injector<IScenesRepository>()),
         observeChangesUsecase: ObserveSceneChangesUsecase(repository: injector<IScenesRepository>()),
+      ));
+
+  injector.registerLazySingleton<IAudioRepository>(
+    () => AudioRepositoryImpl(datasource: ObsAudioDatasource(requester: injector<IObsRequester>())),
+  );
+
+  injector.registerLazySingleton(() => AudioBloc(
+        getInputsUsecase: GetAudioInputsUsecase(repository: injector<IAudioRepository>()),
+        setMuteUsecase: SetInputMuteUsecase(repository: injector<IAudioRepository>()),
+        setVolumeUsecase: SetInputVolumeUsecase(repository: injector<IAudioRepository>()),
+        observeUpdatesUsecase: ObserveAudioUpdatesUsecase(repository: injector<IAudioRepository>()),
       ));
 }
