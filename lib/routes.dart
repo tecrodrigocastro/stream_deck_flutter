@@ -1,12 +1,12 @@
-import 'package:base_clean_arch_bloc/src/app/features/auth/presentation/pages/login_page.dart';
 import 'package:base_clean_arch_bloc/src/app/features/base/presentation/pages/base_page.dart';
 import 'package:base_clean_arch_bloc/src/app/features/design_system/presentation/pages/design_system_page.dart';
 import 'package:base_clean_arch_bloc/src/app/features/home/presentation/pages/home_page.dart';
+import 'package:base_clean_arch_bloc/src/app/features/obs_connection/presentation/pages/connect_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/conectar',
   debugLogDiagnostics: true,
   routes: [
     StatefulShellRoute.indexedStack(
@@ -26,6 +26,6 @@ final router = GoRouter(
     ),
     GoRoute(path: '/', builder: (context, state) => const Placeholder()),
     GoRoute(path: '/design-system', builder: (context, state) => const DesignSystemPage()),
-    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+    GoRoute(path: '/conectar', builder: (context, state) => const ConnectPage()),
   ],
 );
